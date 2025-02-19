@@ -11,4 +11,9 @@ class Product extends Model
 
     protected $table = 'product';
     protected $filable = ['p_name_th', 'p_name_en'];
+
+    public function ProductCategory()
+    {
+        return $this->belongsTo(ProductCategory::class, 'p_pc_id', 'id');
+    }
 }

@@ -19,6 +19,8 @@
         "vue": "^3.4.0"
     },
     "dependencies": {
+        "@mdi/font": "^7.4.47",
+        "currency": "^4.1.0",
         "vuetify": "^3.7.12"
     }
 }

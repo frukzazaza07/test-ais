@@ -11,4 +11,9 @@ class ProductCategory extends Model
 
     protected $table = 'product_category';
     protected $filable = ['pc_name_th', 'pc_name_en'];
+
+    public function Product()
+    {
+        return $this->hasMany(Product::class, 'p_pc_id', 'id');
+    }
 }

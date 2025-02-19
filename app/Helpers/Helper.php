@@ -32,3 +32,13 @@ function generateSerialNumber(ProductCategory $productCategory)
     }
     return $serialNumber;
 }
+
+function convertColumnSnakeToCamel($string, $removePrefix = true)
+{
+    if ($removePrefix) {
+        $stringExplode = explode('_', $string);
+        array_shift($stringExplode);
+        $string = implode("", $stringExplode);
+    }
+    return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $string))));
+}
