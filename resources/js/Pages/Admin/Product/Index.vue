@@ -2,7 +2,7 @@
     <CardComponent>
         <template #content>
             <DataTableComponent v-model:currentPage="table.page" v-model:search="table.search"
-                v-bind="{ dataTable, paginate }" @update:currentPage="handlePageChange"
+                v-bind="{ dataTable, paginate, textField }" @update:currentPage="handlePageChange"
                 @update:submitSearch="handleSubmitSearch">
                 <template #item.id="{ index }">
                     {{ $helpers.setSequence(index, data.meta) }}
@@ -85,6 +85,9 @@ export default {
         },
         paginate() {
             return { length: this.data.meta.last_page }
+        },
+        textField() {
+            return { rules: [...this.$helpers.validateUppercaseString()] }
         },
         queryParams() {
             return { search: this.table.searchValue || null, page: this.table.pageValue || 1 }

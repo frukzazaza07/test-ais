@@ -3,7 +3,7 @@
         <v-row justify="end" v-if="showSearch">
             <v-col cols="12" md="3">
                 <v-form class="" @submit.prevent="$emit('update:submitSearch', search)">
-                    <v-text-field :model-value="search" @update:model-value="
+                    <v-text-field v-bind="{ ...$props.textField }" :model-value="search" @update:model-value="
                         (v) => $emit('update:search', v)
                     "></v-text-field>
                 </v-form>
@@ -45,6 +45,10 @@ export default {
             default: {},
         },
         paginate: {
+            type: Object,
+            default: {},
+        },
+        textField: {
             type: Object,
             default: {},
         },
