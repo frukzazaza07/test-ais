@@ -27,12 +27,12 @@ const showingNavigationDropdown = ref(false);
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink :href="route('admin.product.index')"
-                                    :active="route().current('admin.product.index')">
+                                <NavLink :href="route('admin.product-category.index')"
+                                    :active="route().current('admin.product-category.index') || route().current('admin.product-category.create') || route().current('admin.product-category.edit')">
                                     Product Category
                                 </NavLink>
                                 <NavLink :href="route('admin.product.index')"
-                                    :active="route().current('admin.product.index')">
+                                    :active="route().current('admin.product.index') || route().current('admin.product.create') || route().current('admin.product.edit')">
                                     Product
                                 </NavLink>
                             </div>
@@ -95,7 +95,7 @@ const showingNavigationDropdown = ref(false);
                     <div class="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink :href="route('admin.product.index')"
                             :active="route().current('admin.product.index')">
-                            admin.product.index
+                            Product
                         </ResponsiveNavLink>
                     </div>
 

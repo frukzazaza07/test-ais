@@ -43,32 +43,12 @@ export default {
                 {
                     title: 'หมวดหมู่ไทย',
                     sortable: false,
-                    key: 'category.nameTh',
+                    key: 'nameTh',
                 },
                 {
                     title: 'หมวดหมู่อังกฤษ',
                     sortable: false,
-                    key: 'category.nameEn',
-                },
-                {
-                    title: 'ชื่อไทย',
-                    sortable: false,
-                    key: 'nameTh',
-                },
-                {
-                    title: 'ชื่ออังกฤษ',
-                    sortable: false,
                     key: 'nameEn',
-                },
-                {
-                    title: 'Serial Number',
-                    sortable: false,
-                    key: 'serialNumber',
-                },
-                {
-                    title: 'ราคา',
-                    sortable: false,
-                    key: 'price',
                 },
             ],
             serverItems: [],

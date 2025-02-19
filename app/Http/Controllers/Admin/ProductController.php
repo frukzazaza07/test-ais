@@ -19,13 +19,14 @@ class ProductController extends Controller
     {
         try {
             $results = Product::with('productCategory')->when($request->search, function ($query, $search) {
-                $query->where('p_name_th', 'LIKE', '%' . $search . '%')
-                    ->orWhere('p_name_en', 'LIKE', '%' . $search . '%')
-                    ->orWhere('p_serial_number', 'LIKE', '%' . $search . '%')
-                    ->orWhereHas('productCategory', function ($query) use ($search) {
-                        $query->where('pc_name_th', 'LIKE', '%' . $search . '%')
-                            ->orWhere('pc_name_en', 'LIKE', '%' . $search . '%');
-                    });
+                $query->where('p_serial_number', 'LIKE', '%' . $search . '%');
+                // $query->where('p_name_th', 'LIKE', '%' . $search . '%')
+                //     ->orWhere('p_name_en', 'LIKE', '%' . $search . '%')
+                //     ->orWhere('p_serial_number', 'LIKE', '%' . $search . '%')
+                //     ->orWhereHas('productCategory', function ($query) use ($search) {
+                //         $query->where('pc_name_th', 'LIKE', '%' . $search . '%')
+                //             ->orWhere('pc_name_en', 'LIKE', '%' . $search . '%');
+                //     });
             })
                 // ->orderBy('product_category.pc_name_en', 'ASC')
                 ->orderBy(ProductCategory::select('pc_name_en')->whereColumn('product_category.id', 'product.p_pc_id'))
