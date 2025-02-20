@@ -4,7 +4,7 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build && vite build --ssr",
-        "format": "npx prettier --write 'src/**/*.vue'"
+        "format": "prettier --write \"resources/**/*.{js,jsx,vue}\""
     },
     "devDependencies": {
         "@inertiajs/vue3": "^1.0.0",
@@ -13,6 +13,10 @@
         "@vue/server-renderer": "^3.4.0",
         "autoprefixer": "^10.4.12",
         "axios": "^1.6.4",
+        "eslint": "^9.20.1",
+        "eslint-config-prettier": "^10.0.1",
+        "eslint-plugin-prettier": "^5.2.3",
+        "eslint-plugin-vue": "^9.32.0",
         "laravel-vite-plugin": "^1.0.0",
         "postcss": "^8.4.31",
         "prettier": "^3.5.1",

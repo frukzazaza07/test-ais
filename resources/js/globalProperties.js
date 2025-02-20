@@ -1,7 +1,7 @@
-import helpers from "@/Helpers/index.helper";
+import helpers from '@/Helpers/index.helper'
 
 export const setGlobal = () => {
-    return {
-        $helpers: helpers(),
-    };
-};
+  return {
+    $helpers: helpers(),
+  }
+}
