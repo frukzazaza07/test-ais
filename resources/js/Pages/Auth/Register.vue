@@ -15,11 +15,14 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('register'), {
+    form.post(route('admin.register'), {
         onFinish: () => form.reset('password', 'password_confirmation'),
     });
 };
 </script>
+
+
+<style scoped src="@css/tailwind.css"></style>
 
 <template>
     <GuestLayout>
@@ -73,7 +76,7 @@ const submit = () => {
             </div>
 
             <div class="flex items-center justify-end mt-4">
-                <Link :href="route('login')"
+                <Link :href="route('admin.login')"
                     class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 Already registered?
                 </Link>

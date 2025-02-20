@@ -1,13 +1,15 @@
+import currency from 'currency.js';
+import rules from './rules.helper'
+
 export const setSequence = (index, paginate) => {
     return index + (paginate.current_page - 1) * paginate.per_page + 1;
 };
 
-function validateUppercaseString() {
-    const regex = /^[A-Z]+$/;
-    const duplicateCheck = /(?!.*([A-Z]).*\1)/;
-    return [(input) => regex.test(input) && duplicateCheck.test(input) ? true : 'Please input only A-Z(UPPERCASE).']
-}
+export const currencyTh = (value, digit = 2) => {
+    return currency(value, { symbol: "", precision: digit }).format();
+};
+
 
 export default () => {
-    return { setSequence, validateUppercaseString };
+    return { setSequence, currencyTh, ...rules() };
 };

@@ -2,10 +2,13 @@
     <CardComponent>
         <template #content>
             <DataTableComponent v-model:currentPage="table.page" v-model:search="table.search"
-                v-bind="{ dataTable, paginate, textField }" @update:currentPage="handlePageChange"
+                v-bind="{ dataTable, paginate, textField }" :action="action" @update:currentPage="handlePageChange"
                 @update:submitSearch="handleSubmitSearch">
                 <template #item.id="{ index }">
                     {{ $helpers.setSequence(index, data.meta) }}
+                </template>
+                <template #item.price="{ item }">
+                    {{ $helpers.currencyTh(item.price || 0) }}
                 </template>
             </DataTableComponent>
         </template>
@@ -16,7 +19,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import DataTableComponent from '@/Components/DataTable.vue';
 import CardComponent from '@/Components/Card.vue';
 export default {
-    name: "ProductListPage",
+    name: "AdminProductListPage",
     layout: AuthenticatedLayout,
     components: {
         DataTableComponent,
@@ -77,7 +80,16 @@ export default {
             pageValue: 1, // for ux on search
             search: '',
             searchValue: '', // ป้องกันอยู่หน้า 5 แต่ serach ข้อมูลได้แค่หน้า2
+
         },
+        action: {
+            create: {
+                route: {
+                    name: 'admin.product.create',
+                    label: 'เพิ่มสินค้า'
+                }
+            }
+        }
     }),
     computed: {
         dataTable() {
@@ -87,7 +99,7 @@ export default {
             return { length: this.data.meta.last_page }
         },
         textField() {
-            return { rules: [...this.$helpers.validateUppercaseString()] }
+            return { rules: [...this.$helpers.rules.validateUppercaseString()] }
         },
         queryParams() {
             return { search: this.table.searchValue || null, page: this.table.pageValue || 1 }

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('pc_name_th')->unique();
             $table->string('pc_name_en')->unique();
+            $table->string('pc_prefix_serial_number')->unique();
             $table->unsignedBigInteger('pc_user_id');
             $table->timestamps();
             $table->foreign('pc_user_id')->references('id')->on('users');

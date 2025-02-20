@@ -67,7 +67,7 @@ export default {
             return { length: this.data.meta.last_page }
         },
         textField() {
-            return { rules: [...this.$helpers.validateUppercaseString()] }
+            return { rules: [...this.$helpers.rules.validateUppercaseString()] }
         },
         queryParams() {
             return { search: this.table.searchValue || null, page: this.table.pageValue || 1 }

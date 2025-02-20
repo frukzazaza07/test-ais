@@ -18,9 +18,11 @@ return new class extends Migration
             $table->string('p_serial_number')->unique();
             $table->double('p_price');
             $table->unsignedBigInteger('p_pc_id');
-            $table->unsignedBigInteger('p_user_id');
+            $table->unsignedBigInteger('p_created_by');
+            $table->unsignedBigInteger('p_updated_by');
             $table->foreign('p_pc_id')->references('id')->on('product_category');
-            $table->foreign('p_user_id')->references('id')->on('users');
+            $table->foreign('p_created_by')->references('id')->on('users');
+            $table->foreign('p_updated_by')->references('id')->on('users');
             $table->timestampTz('p_date_of_admission')->useCurrent();
             $table->timestamps();
         });

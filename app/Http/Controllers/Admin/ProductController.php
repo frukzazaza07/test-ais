@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ProductCategoryResource;
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\SelectResource;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use Exception;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -47,7 +51,13 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        try {
+            return Inertia::render('Admin/Product/Create', [
+                'select' => $this->getSelect(),
+            ]);
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 
     /**
@@ -55,7 +65,19 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $validator = $this->validateRequest($request);
+            if ($validator->error) {
+                dd($validator->data);
+                return redirect()->route('admin.product.create')->withErrors(['dialog' => [$validator->data]]);
+            }
+
+            Product::create($validator->data);
+
+            return redirect()->route('admin.product.index')->withSuccess(['dialog' => "เพิ่มข้อมูลข้อมูลเรียบร้อย"]);
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 
     /**
@@ -88,5 +110,33 @@ class ProductController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    private function validateRequest(Request $request, $mode = 'create')
+    {
+        $fillModel   = ['p_pc_id', 'p_name_th', 'p_name_en', 'p_price'];
+        $rules       = Product::rules();
+        $requestData = setPayload($request->all(), $fillModel, 'p');
+        $validator   = Validator::make($requestData, $rules);
+        if ($validator->fails()) {
+            return (object) ["data" => $validator->errors(), "error" => true];
+        }
+        if ($mode == 'create') {
+            $requestData = array_merge($requestData, [
+                'p_created_by' => Auth::id(),
+                'p_serial_number' => generateSerialNumber($requestData['p_pc_id'])
+            ]);
+        }
+        $requestData = array_merge($requestData, [
+            'p_updated_id' => Auth::id(),
+        ]);
+        return (object) ["data" => $requestData, "error" => false];
+    }
+
+    private function getSelect()
+    {
+        return [
+            'productCategory' => SelectResource::collectionSelect(ProductCategory::get(), 'pc_name_th'),
+        ];
     }
 }

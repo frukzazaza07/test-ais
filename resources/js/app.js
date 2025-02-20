@@ -2,7 +2,7 @@ import './bootstrap';
 import '../css/app.css';
 
 import { createApp, h } from 'vue';
-import { createInertiaApp } from '@inertiajs/vue3';
+import { createInertiaApp, Link } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import vuetify from './plugins/vuetify';
@@ -20,6 +20,7 @@ createInertiaApp({
             .use(vuetify);
 
         Object.assign(myApp.config.globalProperties, setGlobal());
+        myApp.component('Link', Link)
         myApp.mount(el);
         return myApp;
     },

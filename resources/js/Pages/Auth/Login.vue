@@ -23,12 +23,13 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('login'), {
+    form.post(route('admin.login'), {
         onFinish: () => form.reset('password'),
     });
 };
 </script>
 
+<style scoped src="@css/tailwind.css"></style>
 <template>
     <GuestLayout>
 
@@ -66,14 +67,14 @@ const submit = () => {
 
             <div class="flex items-center justify-between mt-4">
                 <div class="block">
-                    <Link v-if="canResetPassword" :href="route('register')"
+                    <Link v-if="canResetPassword" :href="route('admin.register')"
                         class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Register
                     </Link>
                 </div>
 
                 <div class="block">
-                    <Link v-if="canResetPassword" :href="route('password.request')"
+                    <Link v-if="canResetPassword" :href="route('admin.password.request')"
                         class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Forgot your password?
                     </Link>

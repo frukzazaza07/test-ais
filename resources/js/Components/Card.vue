@@ -1,8 +1,8 @@
 <template>
     <v-card>
-        <v-card-item>
+        <v-card-text>
             <slot name="content"></slot>
-        </v-card-item>
+        </v-card-text>
     </v-card>
 </template>
 

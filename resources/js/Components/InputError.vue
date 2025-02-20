@@ -5,7 +5,7 @@ defineProps({
     },
 });
 </script>
-
+<style scoped src="@css/tailwind.css"></style>
 <template>
     <div v-show="message">
         <p class="text-sm text-red-600">

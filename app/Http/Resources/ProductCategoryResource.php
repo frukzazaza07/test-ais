@@ -18,6 +18,7 @@ class ProductCategoryResource extends JsonResource
             'id' => $this->id,
             'nameTh' => $this->pc_name_th,
             'nameEn' => $this->pc_name_en,
+            'prefixSerialNumber' => $this->pc_prefix_serial_number,
         ];
     }
 }

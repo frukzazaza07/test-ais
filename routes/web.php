@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\ProductCategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -19,25 +20,29 @@ use Inertia\Inertia;
 */
 
 Route::get('/', function () {
-    return redirect()->route('login');
+    if (Auth::check()) {
+        return redirect()->route('admin.product.index');
+    }
+    return redirect()->route('admin.login');
 });
 
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(function () {
-    Route::resource('/product-category', ProductCategoryController::class);
-    Route::resource('/product', ProductController::class);
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    require __DIR__ . '/auth.php';
+
+    Route::middleware('auth')->group(function () {
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
+
+    Route::middleware('verified')->group(function () {
+        Route::resource('/product-category', ProductCategoryController::class);
+        Route::resource('/product', ProductController::class);
+    });
 });
-
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
 
 Route::get('/{any}', function () {
     $beforeRoute = url()->previous() == url()->current() ? '/' : url()->previous();
     return Inertia::render('404', ['beforeRoute' => $beforeRoute]);
 })->where('any', '.*');
-
-require __DIR__ . '/auth.php';
