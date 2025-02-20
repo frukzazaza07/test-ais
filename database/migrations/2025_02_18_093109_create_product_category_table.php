@@ -13,12 +13,16 @@ return new class extends Migration
     {
         Schema::create('product_category', function (Blueprint $table) {
             $table->id();
-            $table->string('pc_name_th')->unique();
-            $table->string('pc_name_en')->unique();
-            $table->string('pc_prefix_serial_number')->unique();
-            $table->unsignedBigInteger('pc_user_id');
-            $table->timestamps();
-            $table->foreign('pc_user_id')->references('id')->on('users');
+            $table->string('pc_name_th');
+            $table->string('pc_name_en');
+            $table->string('pc_prefix_serial_number');
+            $table->unsignedBigInteger('pc_created_by');
+            $table->unsignedBigInteger('pc_updated_by');
+            $table->timestamp('pc_created_at')->nullable();
+            $table->timestamp('pc_updated_at')->nullable();
+            $table->softDeletes('pc_deleted_at');
+            $table->foreign('pc_created_by')->references('id')->on('users');
+            $table->foreign('pc_updated_by')->references('id')->on('users');
         });
     }
 

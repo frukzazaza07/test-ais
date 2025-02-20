@@ -2,25 +2,36 @@
     <CardComponent>
         <template #content>
             <DataTableComponent v-model:currentPage="table.page" v-model:search="table.search"
-                v-bind="{ dataTable, paginate, textField }" @update:currentPage="handlePageChange"
+                v-bind="{ dataTable, paginate }" :action="action" @update:currentPage="handlePageChange"
                 @update:submitSearch="handleSubmitSearch">
                 <template #item.id="{ index }">
                     {{ $helpers.setSequence(index, data.meta) }}
                 </template>
+                <template #item.action="{ item }">
+                    <DataTableActionComponent :editHref="route('admin.product-category.edit', {
+                        product_category: item.id,
+                    })" @deleteClick="handleDataDelete(item)"></DataTableActionComponent>
+                </template>
             </DataTableComponent>
         </template>
     </CardComponent>
+
+    <DialogComponent v-model="dialog.modelValue" :message="dialog" @onConfirm="handleDelete"></DialogComponent>
 </template>
 <script>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import DataTableComponent from '@/Components/DataTable.vue';
 import CardComponent from '@/Components/Card.vue';
+import DataTableActionComponent from '@/Components/DataTableAction.vue';
+import DialogComponent from '@/Components/Dialog.vue';
 export default {
-    name: "ProductListPage",
+    name: "AdminProductCategoryListPage",
     layout: AuthenticatedLayout,
     components: {
         DataTableComponent,
-        CardComponent
+        CardComponent,
+        DataTableActionComponent,
+        DialogComponent,
     },
     props: {
         data: {
@@ -38,17 +49,33 @@ export default {
                 {
                     title: '#',
                     sortable: false,
+                    align: 'center',
                     key: 'id',
                 },
                 {
                     title: 'หมวดหมู่ไทย',
                     sortable: false,
+                    align: 'center',
                     key: 'nameTh',
                 },
                 {
                     title: 'หมวดหมู่อังกฤษ',
                     sortable: false,
+                    align: 'center',
                     key: 'nameEn',
+                },
+                {
+                    title: 'กรุ้ป Serial Number',
+                    sortable: false,
+                    align: 'center',
+                    key: 'prefixSerialNumber',
+                },
+                {
+                    title: 'Action',
+                    sortable: false,
+                    align: 'center',
+                    key: 'action',
+                    width: '200px',
                 },
             ],
             serverItems: [],
@@ -57,7 +84,23 @@ export default {
             pageValue: 1, // for ux on search
             search: '',
             searchValue: '', // ป้องกันอยู่หน้า 5 แต่ serach ข้อมูลได้แค่หน้า2
+
         },
+        action: {
+            create: {
+                route: {
+                    name: 'admin.product-category.create',
+                    label: 'เพิ่มสินค้า'
+                }
+            }
+        },
+        dataDelete: null,
+        dialog: {
+            modelValue: false,
+            body: 'ต้องการลบข้อมูลของ :atribute?',
+            agree: 'Confirm',
+            disagree: 'Cancel',
+        }
     }),
     computed: {
         dataTable() {
@@ -65,9 +108,6 @@ export default {
         },
         paginate() {
             return { length: this.data.meta.last_page }
-        },
-        textField() {
-            return { rules: [...this.$helpers.rules.validateUppercaseString()] }
         },
         queryParams() {
             return { search: this.table.searchValue || null, page: this.table.pageValue || 1 }
@@ -77,7 +117,9 @@ export default {
     async mounted() {
         this.table.loading = false
         this.table.page = this.data.meta.current_page
+        this.table.pageValue = this.data.meta.current_page
         this.table.search = this.requestData.search
+        this.table.searchValue = this.requestData.search
     },
     methods: {
         handleGetData() {
@@ -93,10 +135,27 @@ export default {
             this.table.pageValue = page
             this.handleGetData()
         },
-        handleSubmitSearch(search) {
+        handleSubmitSearch() {
             this.table.searchValue = this.table.search
             this.table.pageValue = 1
             this.handleGetData()
+        },
+        handleDataDelete(item) {
+            this.dialog.body = this.dialog.body.replace(':atribute', item.nameTh)
+            this.dialog.modelValue = true
+            this.dataDelete = item
+        },
+        handleDelete(confirm) {
+            if (!confirm) {
+                this.dataDelete = null
+                return
+            }
+            this.$inertia.delete(
+                route(
+                    'admin.product-category.destroy',
+                    { ...this.queryParams, product_category: this.dataDelete.id },
+                ),
+            )
         }
     },
 };

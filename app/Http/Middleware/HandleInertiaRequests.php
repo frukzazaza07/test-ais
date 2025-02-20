@@ -41,7 +41,8 @@ class HandleInertiaRequests extends Middleware
             ],
             'route' => [
                 'beforeRoute' => app('router')->getRoutes()->match(app('request')->create(url()->previous()))->getName(),
-            ]
+            ],
+            'success' => fn() => $request->session()->get('success') // message success
         ];
     }
 }

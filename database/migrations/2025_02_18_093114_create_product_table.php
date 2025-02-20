@@ -23,8 +23,9 @@ return new class extends Migration
             $table->foreign('p_pc_id')->references('id')->on('product_category');
             $table->foreign('p_created_by')->references('id')->on('users');
             $table->foreign('p_updated_by')->references('id')->on('users');
-            $table->timestampTz('p_date_of_admission')->useCurrent();
-            $table->timestamps();
+            $table->timestamp('p_created_at')->nullable();
+            $table->timestamp('p_updated_at')->nullable();
+            $table->softDeletes('p_deleted_at');
         });
     }
 

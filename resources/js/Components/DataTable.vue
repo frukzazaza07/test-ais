@@ -45,10 +45,12 @@
 </template>
 <script>
 import { Link } from '@inertiajs/vue3';
+import Success from './Success.vue';
 export default {
     name: "DataTableComponent",
     components: {
         Link,
+        Success,
     },
     props: {
         dataTable: {

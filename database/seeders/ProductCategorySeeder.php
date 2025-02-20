@@ -17,19 +17,22 @@ class ProductCategorySeeder extends Seeder
             'pc_name_th' => 'ทีวี',
             'pc_name_en' => 'TV',
             'pc_prefix_serial_number' => 'TV',
-            'pc_user_id' => 1,
+            'pc_created_by' => 1,
+            'pc_updated_by' => 1,
         ]);
         ProductCategory::create([
             'pc_name_th' => 'ตู้เย็น',
             'pc_name_en' => 'Fridge',
             'pc_prefix_serial_number' => 'FR',
-            'pc_user_id' => 1,
+            'pc_created_by' => 1,
+            'pc_updated_by' => 1,
         ]);
         ProductCategory::create([
             'pc_name_th' => 'เตารีด',
             'pc_name_en' => 'Iron',
             'pc_prefix_serial_number' => 'IR',
-            'pc_user_id' => 1,
+            'pc_created_by' => 1,
+            'pc_updated_by' => 1,
         ]);
     }
 }

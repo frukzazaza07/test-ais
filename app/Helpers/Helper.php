@@ -17,40 +17,13 @@ function generateSerialNumber($productCategoryId, $maxSerialNumber = 6)
         return null;
     }
 
-    $productCategory = ProductCategory::where('id', $productCategoryId)->first();
-    $latestId = Product::where('p_pc_id', $productCategoryId)->max('id');
+    $productCategory = ProductCategory::find($productCategoryId);
+    $latestId = Product::withTrashed()->where('p_pc_id', $productCategoryId)->count();
     $latestNumber = $latestId ? $latestId + 1 : 1;
     $latestLength = mb_strlen($latestNumber, 'UTF-8');
     $maxSerialNumber = $latestLength > $maxSerialNumber ? $latestLength : $maxSerialNumber;
     $serialNumber = 'INV' . $productCategory->pc_prefix_serial_number . str_pad($latestNumber, $maxSerialNumber, '0', STR_PAD_LEFT);
     return $serialNumber;
-
-
-    // $serialNumber = '';
-    // switch ($productCategory) {
-    //     case ProductCategory::TV:
-    //         $latestId = Product::where('p_pc_id', 1)->max('id');
-    //         $latestNumber = $latestId ? $latestId + 1 : 1;
-    //         $latestLength = mb_strlen($latestNumber, 'UTF-8');
-    //         $maxSerialNumber = $latestLength > $maxSerialNumber ? $latestLength : $maxSerialNumber;
-    //         $serialNumber = 'INVTV' . str_pad($latestNumber, $maxSerialNumber, '0', STR_PAD_LEFT);
-    //         break;
-    //     case ProductCategory::FRIDEGE:
-    //         $latestId = Product::where('p_pc_id', 2)->max('id');
-    //         $latestNumber = $latestId ? $latestId + 1 : 1;
-    //         $latestLength = mb_strlen($latestNumber, 'UTF-8');
-    //         $maxSerialNumber = $latestLength > $maxSerialNumber ? $latestLength : $maxSerialNumber;
-    //         $serialNumber = 'INVFR' . str_pad($latestNumber, $maxSerialNumber, '0', STR_PAD_LEFT);
-    //         break;
-    //     case ProductCategory::IRON:
-    //         $latestId = Product::where('p_pc_id', 3)->max('id');
-    //         $latestNumber = $latestId ? $latestId + 1 : 1;
-    //         $latestLength = mb_strlen($latestNumber, 'UTF-8');
-    //         $maxSerialNumber = $latestLength > $maxSerialNumber ? $latestLength : $maxSerialNumber;
-    //         $serialNumber = 'INVIR' . str_pad($latestNumber, $maxSerialNumber, '0', STR_PAD_LEFT);
-    //         break;
-    // }
-    // return $serialNumber;
 }
 
 function convertColumnSnakeToCamel($string, $removePrefix = true)
@@ -103,4 +76,19 @@ function setRules($rules = [], $notPickup = [], $pickup = [])
     }
 
     return $rules;
+}
+
+function regexValidateThaiChar()
+{
+    return 'regex:/^[ก-๙0-9 ]+$/u';
+}
+
+function regexValidateEngChar()
+{
+    return 'regex:/^[a-zA-Z0-9 ]+$/';
+}
+
+function regexValidateEngUppercaseChar()
+{
+    return 'regex:/^[A-Z]+$/';
 }

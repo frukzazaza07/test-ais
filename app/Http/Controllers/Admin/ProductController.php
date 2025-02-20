@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -34,7 +35,7 @@ class ProductController extends Controller
             })
                 // ->orderBy('product_category.pc_name_en', 'ASC')
                 ->orderBy(ProductCategory::select('pc_name_en')->whereColumn('product_category.id', 'product.p_pc_id'))
-                ->orderBy('p_name_en', 'ASC')
+                ->orderBy('p_serial_number', 'ASC')
                 ->paginate(config('app.paginate_perpage'))
                 ->withQueryString();
             return Inertia::render('Admin/Product/Index', [
@@ -68,13 +69,12 @@ class ProductController extends Controller
         try {
             $validator = $this->validateRequest($request);
             if ($validator->error) {
-                dd($validator->data);
-                return redirect()->route('admin.product.create')->withErrors(['dialog' => [$validator->data]]);
+                return redirect()->route('admin.product.create')->withErrors(['alertMessage' => [$validator->data]]);
             }
 
-            Product::create($validator->data);
+            $model = Product::create($validator->data);
 
-            return redirect()->route('admin.product.index')->withSuccess(['dialog' => "เพิ่มข้อมูลข้อมูลเรียบร้อย"]);
+            return redirect()->route('admin.product.index')->withSuccess(['alertMessage' => "เพิ่มข้อมูล {$model->p_name_th} {$model->p_serial_number}เรียบร้อย"]);
         } catch (Exception $e) {
             throw $e;
         }
@@ -93,7 +93,18 @@ class ProductController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        try {
+            $data = Product::find($id);
+            if (!$data) {
+                return redirect()->route('admin.product.index')->withErrors(['alertMessage' => "ไม่พบข้อมูล"]);
+            }
+            return Inertia::render('Admin/Product/Edit', [
+                "data" => new ProductResource($data),
+                "select" => $this->getSelect(),
+            ]);
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 
     /**
@@ -101,21 +112,48 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        try {
+            $model = Product::find($id);
+            if (!$model) {
+                return redirect()->route('admin.product.index')->withErrors(['alertMessage' => "ไม่พบข้อมูล"]);
+            }
+            $validator = $this->validateRequest($request, 'update');
+            if ($validator->error) {
+                return redirect()->route('admin.product.edit', ['product' => $id])->withErrors(['alertMessage' => [$validator->data]]);
+            }
+            $model->update($validator->data);
+
+            return redirect()->route('admin.product.index')->withSuccess(['alertMessage' => "อัพเดทข้อมูล {$model->p_name_th} {$model->p_serial_number} เรียบร้อย"]);
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id, Request $request)
     {
-        //
+        try {
+            $model = Product::find($id);
+            if (!$model) {
+                return redirect()->route('admin.product.index')->withErrors(['alertMessage' => "ไม่พบข้อมูล"]);
+            }
+            $model->delete();
+            return redirect()->route('admin.product.index', $request->all())->withSuccess(['alertMessage' => "ลบข้อมูล {$model->p_name_th} {$model->p_serial_number} เรียบร้อย"]);
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 
     private function validateRequest(Request $request, $mode = 'create')
     {
-        $fillModel   = ['p_pc_id', 'p_name_th', 'p_name_en', 'p_price'];
-        $rules       = Product::rules();
+        $fillModel   = ['p_name_th', 'p_name_en', 'p_price'];
+        $rules       = Product::rules(['p_pc_id']);
+        if ($mode == 'create') {
+            $fillModel = array_merge($fillModel, ['p_pc_id']);
+            $rules       = ProductCategory::rules();
+        }
         $requestData = setPayload($request->all(), $fillModel, 'p');
         $validator   = Validator::make($requestData, $rules);
         if ($validator->fails()) {
@@ -128,7 +166,7 @@ class ProductController extends Controller
             ]);
         }
         $requestData = array_merge($requestData, [
-            'p_updated_id' => Auth::id(),
+            'p_updated_by' => Auth::id(),
         ]);
         return (object) ["data" => $requestData, "error" => false];
     }

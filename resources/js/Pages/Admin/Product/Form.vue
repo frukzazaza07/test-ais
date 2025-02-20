@@ -6,16 +6,17 @@
                     <v-row>
                         <v-col cols="12" md="4">
                             <v-autocomplete v-model="form.pcId" :rules="[...ruleRequired]"
-                                :items="select.productCategory" label="หมวดหมู่"></v-autocomplete>
+                                :items="select.productCategory" label="หมวดหมู่" :readonly="form.id ? true : false"
+                                :hint="form.id ? 'ไม่สามารถแก้ไขได้ เนื่องจากมีการใช้งาน Product Serial Number' : null"></v-autocomplete>
                         </v-col>
                         <v-col cols="12" md="4">
                             <v-text-field v-model="form.nameTh"
-                                :rules="[...ruleRequired, ...this.$helpers.rules.max(100)]"
+                                :rules="[...ruleRequired, ...this.$helpers.rules.max(100), ...this.$helpers.rules.validateThaiCharString()]"
                                 label="ชื่อไทย"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="4">
                             <v-text-field v-model="form.nameEn"
-                                :rules="[...ruleRequired, ...this.$helpers.rules.max(100)]"
+                                :rules="[...ruleRequired, ...this.$helpers.rules.max(100), ...this.$helpers.rules.validateEngCharString()]"
                                 label="ชื่ออังกฤษ"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="4">
@@ -78,6 +79,9 @@ export default {
     computed: {
         ruleRequired() {
             return [...this.$helpers.rules.required()]
+        },
+        urlSubmit() {
+            return this.formType == 'edit' ? route('admin.product.update', { product: this.form.id }) : route('admin.product.store')
         }
     },
     watch: {},
@@ -86,16 +90,14 @@ export default {
     ],
     async mounted() {
         if (this.formType == 'edit' && this.data) {
-            this.form = useForm(this.data)
+            this.form = useForm({ ...this.data, _method: 'PUT', pcId: this.data.category.id })
         }
     },
     methods: {
         async submit() {
             const valid = await this.$refs.formRef.vFormRef.validate();
             if (!valid.valid) return;
-            this.form.post(route('admin.product.store'), {
-                // onFinish: () => { console.log('xxx') },
-            });
+            this.form.post(this.urlSubmit);
         },
     },
 };

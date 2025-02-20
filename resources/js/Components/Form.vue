@@ -6,7 +6,7 @@
             </v-col>
             <v-col cols="auto" class="align-center">
                 <Link v-if="action?.route?.beforeRoute" class="text-white" :href="route(action.route.beforeRoute)">
-                <v-btn color="primary">
+                <v-btn color="info">
                     Back
                 </v-btn>
                 </Link>
@@ -22,9 +22,13 @@
 </template>
 
 <script>
+import Errors from './Errors.vue';
+
 export default {
     name: "FormComponent",
-    components: {},
+    components: {
+        Errors
+    },
     props: {
         title: {
             type: String,

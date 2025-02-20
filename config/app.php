@@ -70,7 +70,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Bangkok',
 
     /*
     |--------------------------------------------------------------------------
@@ -187,6 +187,6 @@ return [
 
 
     // 
-    'paginate_perpage' => 2,
+    'paginate_perpage' => 20,
 
 ];
