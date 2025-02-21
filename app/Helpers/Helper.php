@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Resources\ApiCollection;
 use App\Models\Product;
 use App\Models\ProductCategory;
+use Illuminate\Http\Request;
 
 // enum ProductCategory
 // {
@@ -91,4 +93,35 @@ function regexValidateEngChar()
 function regexValidateEngUppercaseChar()
 {
     return 'regex:/^[A-Z]+$/';
+}
+
+function apiResponse(Request $request, $data, $model, $status = 200)
+{
+    if (!$request->wantsJson()) {
+        return null;
+    }
+    // Return JSON for API requests
+    return response()->json(
+        new ApiCollection($data, $model, $status),
+        $status >= 200 && $status < 300 ? 200 : $status,
+        ['Content-Type' => 'application/json; charset=UTF-8'],
+        JSON_UNESCAPED_UNICODE
+    );
+}
+
+function getApiResponseMessage($status = 200)
+{
+    try {
+        $message = [
+            200 => 'Request Successfully.',
+            201 => 'Created Successfully.',
+            202 => 'Updated Successfully.',
+            204 => 'Deleted Successfully.',
+            400 => 'Validation Input Error.',
+            404 => 'Not found.',
+        ];
+        return $message[$status];
+    } catch (Exception $e) {
+        throw 'getApiResponseMessage not match';
+    }
 }

@@ -1,0 +1,573 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "AIS API",
+        "description": "AIS API",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/admin/product": {
+            "get": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Get a list of Products",
+                "operationId": "c6fe497a0a1c056bf49d502b6aaadc81",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "nameTh": {
+                                                "type": "string",
+                                                "example": "ตู้เย็น LG"
+                                            },
+                                            "nameEn": {
+                                                "type": "string",
+                                                "example": "LG Fridge"
+                                            },
+                                            "serialNumber": {
+                                                "type": "string",
+                                                "example": "INVFR0000001"
+                                            },
+                                            "price": {
+                                                "type": "number",
+                                                "format": "double",
+                                                "example": "10000"
+                                            },
+                                            "category": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "nameTh": {
+                                                        "type": "string",
+                                                        "example": "ตู้เย็น"
+                                                    },
+                                                    "nameEn": {
+                                                        "type": "string",
+                                                        "example": "ตู้เย็น"
+                                                    },
+                                                    "prefixSerialNumber": {
+                                                        "type": "string",
+                                                        "example": "FR"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Products not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Create a new product",
+                "operationId": "899f61b3b0eef0f405927901c5a55722",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nameTh": {
+                                        "type": "string",
+                                        "example": "ตู้เย็น LG"
+                                    },
+                                    "nameEn": {
+                                        "type": "string",
+                                        "example": "LG Fridge"
+                                    },
+                                    "serialNumber": {
+                                        "type": "string",
+                                        "example": "INVFR0000001"
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 10000
+                                    },
+                                    "pcId": {
+                                        "description": "ID from product category",
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Product created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "nameTh": {
+                                            "type": "string",
+                                            "example": "ตู้เย็น LG"
+                                        },
+                                        "nameEn": {
+                                            "type": "string",
+                                            "example": "LG Fridge"
+                                        },
+                                        "serialNumber": {
+                                            "type": "string",
+                                            "example": "INVFR0000001"
+                                        },
+                                        "price": {
+                                            "type": "number",
+                                            "format": "double",
+                                            "example": 10000
+                                        },
+                                        "category": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nameTh": {
+                                                    "type": "string",
+                                                    "example": "ตู้เย็น"
+                                                },
+                                                "nameEn": {
+                                                    "type": "string",
+                                                    "example": "Fridge"
+                                                },
+                                                "prefixSerialNumber": {
+                                                    "type": "string",
+                                                    "example": "FR"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation input error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/product/{id}/edit": {
+            "get": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Retrieve a product for editing",
+                "operationId": "0dd7e5c08d75ce8c3c93b1c5f7241472",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Product ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nameTh": {
+                                                    "type": "string",
+                                                    "example": "ตู้เย็น LG"
+                                                },
+                                                "nameEn": {
+                                                    "type": "string",
+                                                    "example": "LG Fridge"
+                                                },
+                                                "serialNumber": {
+                                                    "type": "string",
+                                                    "example": "INVFR0000001"
+                                                },
+                                                "price": {
+                                                    "type": "number",
+                                                    "format": "double",
+                                                    "example": 10000
+                                                },
+                                                "category": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "nameTh": {
+                                                            "type": "string",
+                                                            "example": "ตู้เย็น"
+                                                        },
+                                                        "nameEn": {
+                                                            "type": "string",
+                                                            "example": "Fridge"
+                                                        },
+                                                        "prefixSerialNumber": {
+                                                            "type": "string",
+                                                            "example": "FR"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found"
+                    },
+                    "400": {
+                        "description": "Validation input error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/product/{id}": {
+            "post": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Update an existing product",
+                "operationId": "0e8b169377d65830c86c01f518e038d0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Product ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nameTh": {
+                                        "type": "string",
+                                        "example": "ตู้เย็น LG Updated"
+                                    },
+                                    "nameEn": {
+                                        "type": "string",
+                                        "example": "LG Fridge Updated"
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 12000
+                                    },
+                                    "_method": {
+                                        "description": "Default value for update",
+                                        "type": "string",
+                                        "example": "PUT"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Product updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "nameTh": {
+                                            "type": "string",
+                                            "example": "ตู้เย็น LG Updated"
+                                        },
+                                        "nameEn": {
+                                            "type": "string",
+                                            "example": "LG Fridge Updated"
+                                        },
+                                        "serialNumber": {
+                                            "type": "string",
+                                            "example": "INVFR0000001"
+                                        },
+                                        "price": {
+                                            "type": "number",
+                                            "format": "double",
+                                            "example": 12000
+                                        },
+                                        "category": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nameTh": {
+                                                    "type": "string",
+                                                    "example": "ตู้เย็น"
+                                                },
+                                                "nameEn": {
+                                                    "type": "string",
+                                                    "example": "Fridge"
+                                                },
+                                                "prefixSerialNumber": {
+                                                    "type": "string",
+                                                    "example": "FR"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found"
+                    },
+                    "400": {
+                        "description": "Validation input error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Delete a product",
+                "description": "Deletes a product by ID",
+                "operationId": "deleteProduct",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the product to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Product deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Product not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Authenticate a user and return a token",
+                "operationId": "222b2625838e3c57e017987f73598fda",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "username": {
+                                        "type": "string",
+                                        "example": "admin"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "user@example.com"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "example": "2025-02-21T00:00:00.000000Z"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "example": "2025-02-21T00:00:00.000000Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|random-token-string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "responses": {
+            "401": {
+                "description": "Unauthorized",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "error": {
+                                    "type": "string",
+                                    "example": "Unauthorized access"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Product",
+            "description": "Product"
+        },
+        {
+            "name": "Authentication",
+            "description": "Authentication"
+        }
+    ]
+}

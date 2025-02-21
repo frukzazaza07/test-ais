@@ -37,8 +37,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 
     Route::middleware('verified')->group(function () {
-        Route::resource('/product-category', ProductCategoryController::class);
-        Route::resource('/product', ProductController::class);
+        Route::resource('/product-category', ProductCategoryController::class)->except(['show']);
+        Route::resource('/product', ProductController::class)->except(['show']);
     });
 });
 
