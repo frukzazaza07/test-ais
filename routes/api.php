@@ -21,11 +21,15 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::post('/login', [AuthController::class, 'login']);
 
+Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 Route::prefix('admin')->name('admin.')->middleware('auth:sanctum')->group(function () {
     Route::resource('/product-category', ProductCategoryController::class)->except(['show']);
-    Route::resource('/product', ProductController::class)->except(['show']);
     Route::post('/product-cmd', [ProductController::class, 'index']);
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    Route::prefix('product')->name('product.')->group(function () {
+        Route::resource('', ProductController::class)->parameters(['' => 'product'])->except(['show']);
+        Route::post('/generate-qrcode/{product}', [ProductController::class, 'generateQrcode'])->name('generate-qrcode');
+    });
 });

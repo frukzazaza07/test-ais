@@ -4,6 +4,7 @@
       <v-btn color="primary" size="small"> Edit </v-btn>
     </Link>
     <v-btn color="error" size="small" @click="$emit('deleteClick')"> Delete </v-btn>
+    <slot name="append"></slot>
   </div>
 </template>
 

@@ -23,7 +23,11 @@
               })
             "
             @deleteClick="handleDataDelete(item)"
-          ></DataTableActionComponent>
+          >
+            <template #append>
+              <v-btn color="success" @click="handleGenerateQrcode(item)"> Qrcode </v-btn>
+            </template>
+          </DataTableActionComponent>
         </template>
       </DataTableComponent>
     </template>
@@ -193,6 +197,19 @@ export default {
       this.$inertia.delete(
         route('admin.product.destroy', { ...this.queryParams, product: this.dataDelete.id }),
       )
+    },
+    async handleGenerateQrcode(item) {
+      const response = await axios({
+        url: route('admin.product.generate-qrcode', { product: item.id }),
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          Authorization: localStorage.getItem('api-token'),
+        },
+        data: {},
+        method: 'POST',
+      })
+      console.log(response.data.data.data.base64)
     },
   },
 }

@@ -4,6 +4,7 @@ use App\Http\Resources\ApiCollection;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 // enum ProductCategory
 // {
@@ -124,4 +125,14 @@ function getApiResponseMessage($status = 200)
     } catch (Exception $e) {
         throw 'getApiResponseMessage not match';
     }
+}
+
+function generateQrcode($generateData, $format = 'png', $size = 300)
+{
+    return QrCode::format($format)
+        // ->merge('/public/backoffice/insureok-logo.png')
+        ->margin(2)
+        ->size($size)
+        ->errorCorrection('M')
+        ->generate($generateData);
 }

@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ProductCategoryResource;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\SelectResource;
 use App\Models\Product;
@@ -13,9 +11,11 @@ use Exception;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use OpenApi\Annotations as OA;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Imagick\Driver;
 
 class ProductController extends Controller
 {
@@ -88,6 +88,7 @@ class ProductController extends Controller
             if ($wantsJson) {
                 return $wantsJson;
             }
+
             return Inertia::render('Admin/Product/Index', [
                 'data' => ProductResource::collection($results),
                 'requestData' => $request->all(),
@@ -165,12 +166,10 @@ class ProductController extends Controller
             }
 
             $model = Product::create($validator->data);
-
             $wantsJson = apiResponse($request, new ProductResource($model), $model, 201);
             if ($wantsJson) {
                 return $wantsJson;
             }
-
 
             return redirect()->route('admin.product.index')->withSuccess(['alertMessage' => "เพิ่มข้อมูล {$model->p_name_th} {$model->p_serial_number}เรียบร้อย"]);
         } catch (Exception $e) {
@@ -385,6 +384,38 @@ class ProductController extends Controller
             }
 
             return redirect()->route('admin.product.index', $request->all())->withSuccess(['alertMessage' => "ลบข้อมูล {$model->p_name_th} {$model->p_serial_number} เรียบร้อย"]);
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function generateQrcode(string $id, Request $request)
+    {
+        try {
+            $model = Product::find($id);
+            if (!$model) {
+                $wantsJson = apiResponse($request, [], null, 404);
+                if ($wantsJson) {
+                    return $wantsJson;
+                }
+                return redirect()->route('admin.product.index')->withErrors(['alertMessage' => "ไม่พบข้อมูล"]);
+            }
+            $storeFile = "temp/product/qrcode/" . $model->id . '-' . $model->p_serial_number . '.png';
+            $fullUrl = route('admin.product.edit', ['product' => $model->id]);
+            $qrcode = generateQrcode($fullUrl);
+            Storage::disk('local')->put($storeFile, (string) $qrcode);
+            $binaryQrcode = Storage::disk('local')->get($storeFile);
+            $manager = new ImageManager(new Driver());
+            $image = $manager->read($binaryQrcode);
+            $image->text("Serial Number " . $model->p_serial_number, 15, 15, function ($font) {
+                $font->file(public_path('/fonts/Sarabun-Regular.ttf'));
+                $font->color('#000000');
+                $font->size(14);
+            });
+            Storage::disk('local')->delete($storeFile);
+            $base64 = base64_encode($image->toPng());
+            $base64WithMime = 'data:image/png;base64,' . $base64;
+            return apiResponse($request, ['base64' => $base64WithMime], null);
         } catch (Exception $e) {
             throw $e;
         }

@@ -48,7 +48,8 @@ class LoginRequest extends FormRequest
                 'username' => trans('auth.failed'),
             ]);
         }
-
+        $user = auth()->user();
+        $user->createToken('api-token')->plainTextToken;
         RateLimiter::clear($this->throttleKey());
     }
 

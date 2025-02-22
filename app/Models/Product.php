@@ -11,7 +11,7 @@ class Product extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'product';
-    protected $fillable = ['p_pc_id', 'p_name_th', 'p_name_en', 'p_price', 'p_serial_number', 'p_created_by', 'p_updated_by'];
+    protected $fillable = ['p_pc_id', 'p_name_th', 'p_name_en', 'p_price', 'p_serial_number', 'p_serial_number_image', 'p_created_by', 'p_updated_by'];
     public $timestamps = false;
     protected $dates = ['p_created_at', 'p_updated_at', 'p_deleted_at'];
     const CREATED_AT = 'p_created_at';

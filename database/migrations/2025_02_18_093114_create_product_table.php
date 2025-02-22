@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('p_name_th');
             $table->string('p_name_en');
             $table->string('p_serial_number')->unique();
+            $table->string('p_serial_number_image')->nullable()->unique();
             $table->double('p_price');
             $table->unsignedBigInteger('p_pc_id');
             $table->unsignedBigInteger('p_created_by');
