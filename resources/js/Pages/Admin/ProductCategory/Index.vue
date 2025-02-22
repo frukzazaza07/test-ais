@@ -37,7 +37,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import DataTableComponent from '@/Components/DataTable.vue'
 import CardComponent from '@/Components/Card.vue'
 import DataTableActionComponent from '@/Components/DataTableAction.vue'
-import DialogComponent from '@/Components/Dialog.vue'
+import DialogComponent from '@/Components/DialogAlert.vue'
 export default {
   name: 'AdminProductCategoryListPage',
   layout: AuthenticatedLayout,

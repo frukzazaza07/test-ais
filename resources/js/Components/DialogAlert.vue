@@ -1,13 +1,18 @@
 <template>
-  <v-dialog :model-value="modelValue" v-bind="{ ...defaultConfigDialog }">
+  <v-dialog :model-value="modelValue" v-bind="{ ...defaultConfigDialog, ...customConfigDialog }">
     <v-card
+      v-bind="{ ...customConfigCard }"
       :text="message.body || defaultConfigCard.body"
       :title="message.title || defaultConfigCard.title"
     >
+      <template v-if="$slots.cardText" v-slot:text class="pb-0">
+        <slot name="cardText"></slot>
+      </template>
       <template v-slot:actions>
         <v-spacer></v-spacer>
-
+        <slot name="cardAction"></slot>
         <v-btn
+          v-if="!$slots.cardAction"
           @click="($emit('update:modelValue', false), $emit('onConfirm', false))"
           color="warning"
           variant="flat"
@@ -16,6 +21,7 @@
         </v-btn>
 
         <v-btn
+          v-if="!$slots.cardAction"
           @click="($emit('update:modelValue', false), $emit('onConfirm', true))"
           color="primary"
           variant="flat"
@@ -29,7 +35,7 @@
 
 <script>
 export default {
-  name: 'DialogComponent',
+  name: 'DialogAlertComponent',
   components: {},
   props: {
     message: {
@@ -44,6 +50,14 @@ export default {
     modelValue: {
       type: Boolean,
       default: false,
+    },
+    customConfigDialog: {
+      type: Object,
+      default: {},
+    },
+    customConfigCard: {
+      type: Object,
+      default: {},
     },
   },
   data: () => ({

@@ -1,13 +1,13 @@
 <template>
   <div>
     <v-row justify="space-between" v-if="showSearch">
-      <v-col cols="12" md="auto">
+      <v-col cols="12" md="auto" class="d-flex ga-4">
         <Link v-if="action?.create" class="text-white" :href="route(action.create.route?.name)">
           <v-btn color="primary">
             {{ action.create.route?.label }}
           </v-btn>
         </Link>
-        <slot name="actionContainer"></slot>
+        <slot name="actionAppendContainer"></slot>
       </v-col>
       <v-col cols="12" md="3">
         <v-form class="" @submit.prevent="$emit('update:submitSearch', search)">

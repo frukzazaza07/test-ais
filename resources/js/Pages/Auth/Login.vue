@@ -23,20 +23,6 @@ const form = useForm({
 })
 
 const submit = async () => {
-  try {
-    const response = await axios({
-      url: route('api.login'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      data: {
-        username: form.username,
-        password: form.password,
-      },
-      method: 'POST',
-    })
-    localStorage.setItem('api-token', `Authorization: Bearer ${response.data.token}`)
-  } catch (error) {}
   form.post(route('admin.login'), {
     onFinish: () => form.reset('password'),
   })

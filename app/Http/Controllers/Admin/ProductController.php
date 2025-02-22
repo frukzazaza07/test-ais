@@ -415,7 +415,12 @@ class ProductController extends Controller
             Storage::disk('local')->delete($storeFile);
             $base64 = base64_encode($image->toPng());
             $base64WithMime = 'data:image/png;base64,' . $base64;
-            return apiResponse($request, ['base64' => $base64WithMime], null);
+
+            $wantsJson = apiResponse($request, new ProductResource($model), $model, 204);
+            if ($wantsJson) {
+                return apiResponse($request, ['base64' => $base64WithMime], null);
+            }
+            return redirect()->route('admin.product.index', $request->all())->withSuccess(['qrcodeBase64' => $base64WithMime]);
         } catch (Exception $e) {
             throw $e;
         }

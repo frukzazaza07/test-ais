@@ -130,7 +130,6 @@ function getApiResponseMessage($status = 200)
 function generateQrcode($generateData, $format = 'png', $size = 300)
 {
     return QrCode::format($format)
-        // ->merge('/public/backoffice/insureok-logo.png')
         ->margin(2)
         ->size($size)
         ->errorCorrection('M')

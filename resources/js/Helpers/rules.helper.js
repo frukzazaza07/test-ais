@@ -55,6 +55,15 @@ export const max = (max, message = null) => [
 
 export const required = () => [(value) => !!value || value === 0 || 'กรุณากรอกข้อมูล']
 
+export const validateFileType = (fileType = ['text/csv']) => [
+  (files) =>
+    !Array.isArray(files) || !files.length
+      ? `File type only ${fileType.join(',')}`
+      : fileType.includes(files[0].type)
+        ? true
+        : `File type only ${fileType.join(',')}`,
+]
+
 export default () => {
   return {
     rules: {
@@ -63,6 +72,7 @@ export default () => {
       required,
       validateThaiCharString,
       validateEngCharString,
+      validateFileType,
     },
   }
 }

@@ -5,10 +5,30 @@
         v-model:currentPage="table.page"
         v-model:search="table.search"
         v-bind="{ dataTable, paginate, textField }"
-        :action="action"
+        :action="dataTableTitleAction"
         @update:currentPage="handlePageChange"
         @update:submitSearch="handleSubmitSearch"
       >
+        <template #actionAppendContainer>
+          <div>
+            <v-btn color="blue" @click="handleImportFile"> Import CSV </v-btn>
+            <input
+              class="d-none"
+              ref="importFileInputRef"
+              @change="handleFileChange"
+              type="file"
+              accept=".csv"
+            />
+            <v-file-input
+              v-model="form.importFile"
+              accept=".csv"
+              :prepend-icon="null"
+              :rules="[...($helpers.rules?.validateFileType() || [])]"
+            >
+            </v-file-input>
+          </div>
+          <v-btn color="secondary"> Export CSV </v-btn>
+        </template>
         <template #item.id="{ index }">
           {{ $helpers.setSequence(index, data.meta) }}
         </template>
@@ -33,18 +53,38 @@
     </template>
   </CardComponent>
 
-  <DialogComponent
+  <DialogAlertComponent
     v-model="dialog.modelValue"
     :message="dialog"
     @onConfirm="handleDelete"
-  ></DialogComponent>
+  ></DialogAlertComponent>
+
+  <DialogAlertComponent
+    v-model="qrcode.modelValue"
+    :message="qrcode.message"
+    :customConfigDialog="qrcode.customConfigDialog"
+    :customConfigCard="qrcode.customConfigCard"
+  >
+    <template #cardText>
+      <v-img :src="qrcode.base64"></v-img>
+    </template>
+    <template #cardAction>
+      <v-btn
+        color="primary"
+        variant="outlined"
+        @click="() => (qrcode.modelValue = !qrcode.modelValue)"
+        >close</v-btn
+      >
+    </template>
+  </DialogAlertComponent>
 </template>
 <script>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import DataTableComponent from '@/Components/DataTable.vue'
 import CardComponent from '@/Components/Card.vue'
 import DataTableActionComponent from '@/Components/DataTableAction.vue'
-import DialogComponent from '@/Components/Dialog.vue'
+import DialogAlertComponent from '@/Components/DialogAlert.vue'
+import { useForm } from '@inertiajs/vue3'
 export default {
   name: 'AdminProductListPage',
   layout: AuthenticatedLayout,
@@ -52,7 +92,7 @@ export default {
     DataTableComponent,
     CardComponent,
     DataTableActionComponent,
-    DialogComponent,
+    DialogAlertComponent,
   },
   props: {
     data: {
@@ -114,7 +154,7 @@ export default {
           sortable: false,
           align: 'center',
           key: 'action',
-          width: '200px',
+          width: '300px',
         },
       ],
       serverItems: [],
@@ -124,7 +164,7 @@ export default {
       search: '',
       searchValue: '', // ป้องกันอยู่หน้า 5 แต่ serach ข้อมูลได้แค่หน้า2
     },
-    action: {
+    dataTableTitleAction: {
       create: {
         route: {
           name: 'admin.product.create',
@@ -139,6 +179,23 @@ export default {
       agree: 'Confirm',
       disagree: 'Cancel',
     },
+    qrcode: {
+      modelValue: false,
+      base64: '',
+      customConfigDialog: {
+        width: '340px',
+      },
+      customConfigCard: {
+        width: '340px',
+      },
+      message: {
+        title: ' ',
+        body: ' ',
+      },
+    },
+    form: useForm({
+      importFile: null,
+    }),
   }),
   computed: {
     dataTable() {
@@ -159,13 +216,23 @@ export default {
       return { search: this.table.searchValue || null, page: this.table.pageValue || 1 }
     },
   },
-  watch: {},
+  watch: {
+    '$page.props': {
+      handler(newValue, oldValue) {
+        this.handleQrcode(newValue)
+      },
+      deep: true, // Watch nested changes
+      immediate: true, // Run immediately
+    },
+  },
   async mounted() {
     this.table.loading = false
     this.table.page = this.data.meta.current_page
     this.table.pageValue = this.data.meta.current_page
     this.table.search = this.requestData.search
     this.table.searchValue = this.requestData.search
+
+    this.handleQrcode(this.$page.props)
   },
   methods: {
     handleGetData() {
@@ -199,19 +266,40 @@ export default {
       )
     },
     async handleGenerateQrcode(item) {
-      const response = await axios({
-        url: route('admin.product.generate-qrcode', { product: item.id }),
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-          Authorization: localStorage.getItem('api-token'),
-        },
-        data: {},
-        method: 'POST',
-      })
-      console.log(response.data.data.data.base64)
+      this.$inertia.post(route('admin.product.generate-qrcode', { product: item.id }))
+    },
+    handleQrcode(newValue) {
+      if (newValue?.success?.qrcodeBase64 && newValue?.success?.qrcodeBase64 != '') {
+        this.qrcode.base64 = newValue?.success?.qrcodeBase64
+        this.qrcode.modelValue = true
+      }
+    },
+    handleImportFile() {
+      this.$refs?.importFileInputRef?.click()
+    },
+    handleFileChange(event) {
+      const files = event.target.files
+      if (files && files.length > 0) {
+        this.form.importFile = files[0]
+      } else {
+        this.form.importFile = null
+      }
     },
   },
 }
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+:deep() {
+  .v-file-input {
+    .v-input__control {
+      .v-field {
+        display: none;
+      }
+    }
+
+    .v-input__details {
+      padding-inline: 0px;
+    }
+  }
+}
+</style>
