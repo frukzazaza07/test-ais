@@ -30,13 +30,16 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
+# Copy composer files first (to optimize caching)
+COPY composer.json composer.lock ./
+
+# Install Laravel dependencies
+RUN composer install --ignore-platform-req=ext-zip --optimize-autoloader --no-dev
+
 # Copy application files
 COPY . /var/www
 
 # ENV COMPOSER_ALLOW_SUPERUSER=1
-
-# Install Laravel dependencies
-RUN composer install --ignore-platform-req=ext-zip --optimize-autoloader --no-dev
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www \

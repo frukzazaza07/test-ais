@@ -1,6 +1,6 @@
 #!/bin/bash
 
-composer install --ignore-platform-req=ext-zip --optimize-autoloader --no-dev
+# composer install --ignore-platform-req=ext-zip --optimize-autoloader --no-dev
 
 # Run migrations
 php artisan migrate --force
