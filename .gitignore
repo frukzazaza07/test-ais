@@ -34,12 +34,12 @@ nginx/
 php.log
 
 public/build
-docker/mysql/dbdata/
+docker/mysql/dbdata
 
 # Laravel-specific exclusions
 public/storage             # Storage symlink (created by php artisan storage:link)
-bootstrap/cache/           # Compiled cache files
-bootstrap/ssr/           # Compiled ssr
+bootstrap/cache           # Compiled cache files
+bootstrap/ssr           # Compiled ssr
 .env                       # Environment file (sensitive, copy separately if needed)
 .env.*                    # Other environment files (e.g., .env.testing)
  Homestead.yaml            # Laravel Homestead config
