@@ -24,20 +24,22 @@ RUN printf "\n" | pecl install imagick \
 # Verify Imagick installation
 RUN php -m | grep imagick || echo "Imagick installation failed"
 
+# Install nodejs
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install
+
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Set working directory
 WORKDIR /var/www
 
-# Copy composer files first (to optimize caching)
-COPY composer.json composer.lock ./
+# Copy application files
+COPY . .
 
 # Install Laravel dependencies
 RUN composer install --ignore-platform-req=ext-zip --optimize-autoloader --no-dev
-
-# Copy application files
-COPY . /var/www
 
 # ENV COMPOSER_ALLOW_SUPERUSER=1
 

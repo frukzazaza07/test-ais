@@ -33,3 +33,5 @@ docker-compose.yml
 # Nginx & PHP logs
 nginx/
 php.log
+
+public/build
