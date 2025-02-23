@@ -28,10 +28,10 @@ RUN php -m | grep imagick || echo "Imagick installation failed"
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Set working directory
-WORKDIR /var/www/html/test-ais
+WORKDIR /var/www
 
 # Copy application files
-COPY . /var/www/html/test-ais
+COPY . /var/www
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
@@ -39,8 +39,8 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN composer install --ignore-platform-req=ext-zip --optimize-autoloader --no-dev
 
 # Set permissions
-RUN chown -R www-data:www-data /var/www/html/test-ais \
-    && chmod -R 755 /var/www/html/test-ais/storage
+RUN chown -R www-data:www-data /var/www \
+    && chmod -R 755 /var/www/storage
 
 COPY ./docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
