@@ -4,14 +4,14 @@ services:
   # PHP Application (Laravel)
   app:
     build:
-      context: .
+      context: ../
       dockerfile: Dockerfile
     container_name: laravel_app
     restart: unless-stopped
     working_dir: /var/www
     volumes:
-      - .:/var/www
-      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - ../:/var/www
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
       - app-network
 
@@ -23,8 +23,8 @@ services:
     ports:
       - "8000:80"
     volumes:
-      - .:/var/www
-      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+      - ../:/var/www
+      - ./nginx/conf.d:/etc/nginx/conf.d
     depends_on:
       - app
     networks:
@@ -36,24 +36,25 @@ services:
     container_name: laravel_db
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: laravel_db
+      MYSQL_DATABASE: test-ais
       MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_PASSWORD: your_password
+      MYSQL_PASSWORD: root
       MYSQL_USER: laravel_user
     volumes:
-      - dbdata:/var/lib/mysql
+      - ./mysql/dbdata:/var/lib/mysql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - "3306:3306"
+      - "3308:3306"
     networks:
       - app-network
 
   # Node.js for Vue.js/Inertia.js Build
   node:
-    image: node:18
+    image: node:20
     container_name: laravel_node
     working_dir: /var/www
     volumes:
-      - .:/var/www
+      - ../:/var/www
     command: >
       sh -c "npm install && npm run build"
     networks:
@@ -65,3 +66,14 @@ networks:
 
 volumes:
   dbdata:
+
+
+  # step for run
+  # Build and start the containers
+  # docker-compose up -d --build
+
+  # Run Laravel migrations
+  # docker-compose exec app php artisan migrate
+
+  # Build SSR assets
+  # docker-compose exec node npm run build

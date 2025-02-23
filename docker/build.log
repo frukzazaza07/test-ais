@@ -1,0 +1,35 @@
+time="2025-02-23T13:40:34+07:00" level=warning msg="D:\\laravel\\test-ais\\docker\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [app internal] load build definition from dockerfile
+#1 transferring dockerfile: 1.44kB done
+#1 DONE 0.0s
+
+#2 [app internal] load metadata for docker.io/library/php:8.2-fpm
+#2 ...
+
+#3 [app internal] load metadata for docker.io/library/composer:latest
+#3 DONE 0.9s
+
+#2 [app internal] load metadata for docker.io/library/php:8.2-fpm
+#2 DONE 1.9s
+
+#4 [app internal] load .dockerignore
+#4 transferring context: 177B done
+#4 DONE 0.0s
+
+#5 [app] FROM docker.io/library/composer:latest@sha256:59ee7d4d85c5ea88e3eb91ef2f93498e7bab51526327a479b4cb9f4d9b4bd567
+#5 resolve docker.io/library/composer:latest@sha256:59ee7d4d85c5ea88e3eb91ef2f93498e7bab51526327a479b4cb9f4d9b4bd567 0.0s done
+#5 CANCELED
+
+#6 [app internal] load build context
+#6 transferring context: 7.51MB 0.2s done
+#6 ERROR: archive/tar: unknown file mode ?rwxr-xr-x
+
+#7 [app stage-0  1/11] FROM docker.io/library/php:8.2-fpm@sha256:7c00ae6c9345f86c50dfae1870eeb30d527de3ba6f02e64bd0eeae1686e2c79f
+#7 resolve docker.io/library/php:8.2-fpm@sha256:7c00ae6c9345f86c50dfae1870eeb30d527de3ba6f02e64bd0eeae1686e2c79f 0.0s done
+#7 CANCELED
+------
+ > [app internal] load build context:
+------
+failed to solve: archive/tar: unknown file mode ?rwxr-xr-x
