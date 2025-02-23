@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\ProductExport;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\SelectResource;
+use App\Imports\ProductImport;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use Exception;
@@ -16,6 +18,7 @@ use Inertia\Inertia;
 use OpenApi\Annotations as OA;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Imagick\Driver;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends Controller
 {
@@ -94,21 +97,21 @@ class ProductController extends Controller
                 'requestData' => $request->all(),
             ]);
         } catch (Exception $e) {
-            throw $e;
+            return redirect()->back()->withErrors(['alertMessage' => $e->getMessage()]);
         }
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
         try {
             return Inertia::render('Admin/Product/Create', [
                 'select' => $this->getSelect(),
             ]);
         } catch (Exception $e) {
-            throw $e;
+            return redirect()->back()->withErrors(['alertMessage' => $e->getMessage()]);
         }
     }
 
@@ -173,7 +176,11 @@ class ProductController extends Controller
 
             return redirect()->route('admin.product.index')->withSuccess(['alertMessage' => "เพิ่มข้อมูล {$model->p_name_th} {$model->p_serial_number}เรียบร้อย"]);
         } catch (Exception $e) {
-            throw $e;
+            $wantsJson =  apiResponse($request, $e->getMessage(), null, 500);
+            if ($wantsJson) {
+                return $wantsJson;
+            }
+            return redirect()->back()->withErrors(['alertMessage' => $e->getMessage()]);
         }
     }
 
@@ -246,7 +253,11 @@ class ProductController extends Controller
                 "select" => $this->getSelect(),
             ]);
         } catch (Exception $e) {
-            throw $e;
+            $wantsJson =  apiResponse($request, $e->getMessage(), null, 500);
+            if ($wantsJson) {
+                return $wantsJson;
+            }
+            return redirect()->back()->withErrors(['alertMessage' => $e->getMessage()]);
         }
     }
 
@@ -325,7 +336,11 @@ class ProductController extends Controller
 
             return redirect()->route('admin.product.index')->withSuccess(['alertMessage' => "อัพเดทข้อมูล {$model->p_name_th} {$model->p_serial_number} เรียบร้อย"]);
         } catch (Exception $e) {
-            throw $e;
+            $wantsJson =  apiResponse($request, $e->getMessage(), null, 500);
+            if ($wantsJson) {
+                return $wantsJson;
+            }
+            return redirect()->back()->withErrors(['alertMessage' => $e->getMessage()]);
         }
     }
 
@@ -385,7 +400,58 @@ class ProductController extends Controller
 
             return redirect()->route('admin.product.index', $request->all())->withSuccess(['alertMessage' => "ลบข้อมูล {$model->p_name_th} {$model->p_serial_number} เรียบร้อย"]);
         } catch (Exception $e) {
-            throw $e;
+            $wantsJson =  apiResponse($request, $e->getMessage(), null, 500);
+            if ($wantsJson) {
+                return $wantsJson;
+            }
+            return redirect()->back()->withErrors(['alertMessage' => $e->getMessage()]);
+        }
+    }
+
+    public function import(Request $request)
+    {
+        try {
+            $rules = Product::rules([], ['file']);
+            $validator   = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                $errors = [$validator->errors()];
+                $wantsJson =  apiResponse($request, $errors, null, 400);
+                if ($wantsJson) {
+                    return $wantsJson;
+                }
+                return redirect()->route('admin.product.index', $request->all())->withErrors(['alertMessage' => $errors]);
+            }
+
+            Excel::import(new ProductImport, $request->file('file'));
+            $wantsJson = apiResponse($request, null, null);
+            if ($wantsJson) {
+                return  $wantsJson;
+            }
+            return redirect()->route('admin.product.index', $request->all())->withSuccess(['alertMessage' => 'Import ข้อมูลสำเร็จ']);
+        } catch (\Exception $e) {
+            $wantsJson =  apiResponse($request, $e->getMessage(), null, 500);
+            if ($wantsJson) {
+                return $wantsJson;
+            }
+            return redirect()->back()->withErrors(['alertMessage' => $e->getMessage()]);
+        }
+    }
+
+    public function export(Request $request)
+    {
+        try {
+            $format = $request->input('format', 'csv');
+            $fileName = 'products_' . date('Ymd_His');
+
+            $export = new ProductExport();
+
+            if (Product::count() === 0) {
+                return redirect()->back()->withErrors(['alertMessage' => 'No data available to export.']);
+            }
+
+            return Excel::download($export, $fileName . '.xlsx');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['alertMessage' => $e->getMessage()]);
         }
     }
 
@@ -416,38 +482,42 @@ class ProductController extends Controller
             $base64 = base64_encode($image->toPng());
             $base64WithMime = 'data:image/png;base64,' . $base64;
 
-            $wantsJson = apiResponse($request, new ProductResource($model), $model, 204);
+            $wantsJson = apiResponse($request, ['base64' => $base64WithMime], null);
             if ($wantsJson) {
-                return apiResponse($request, ['base64' => $base64WithMime], null);
+                return $wantsJson;
             }
             return redirect()->route('admin.product.index', $request->all())->withSuccess(['qrcodeBase64' => $base64WithMime]);
         } catch (Exception $e) {
-            throw $e;
+            $wantsJson =  apiResponse($request, $e->getMessage(), null, 500);
+            if ($wantsJson) {
+                return $wantsJson;
+            }
+            return redirect()->back()->withErrors(['alertMessage' => $e->getMessage()]);
         }
     }
 
     private function validateRequest(Request $request, $mode = 'create')
     {
         $fillModel   = ['p_name_th', 'p_name_en', 'p_price'];
-        $rules       = Product::rules(['p_pc_id']);
+        $rules       = Product::rules(['p_pc_id', 'file']);
+        $payload = $request->all();
         if ($mode == 'create') {
-            $fillModel = array_merge($fillModel, ['p_pc_id']);
-            $rules       = Product::rules();
+            $fillModel = array_merge($fillModel, ['p_pc_id', 'p_created_by', 'p_serial_number']);
+            $rules       = Product::rules(['file']);
             $productCategoryModel = ProductCategory::find($request->pcId);
             if (!$productCategoryModel) {
                 return (object) ["data" => ['pcId' => 'pcId not found'], "error" => true];
             }
+
+            $payload = array_merge($payload, [
+                'p_created_by' => Auth::id(),
+                'p_serial_number' => generateSerialNumber($payload['p_pc_id'])
+            ]);
         }
         $requestData = setPayload($request->all(), $fillModel, 'p');
         $validator   = Validator::make($requestData, $rules);
         if ($validator->fails()) {
             return (object) ["data" => $validator->errors(), "error" => true];
-        }
-        if ($mode == 'create') {
-            $requestData = array_merge($requestData, [
-                'p_created_by' => Auth::id(),
-                'p_serial_number' => generateSerialNumber($requestData['p_pc_id'])
-            ]);
         }
         $requestData = array_merge($requestData, [
             'p_updated_by' => Auth::id(),

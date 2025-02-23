@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Validation\Rule;
 
 class Product extends Model
 {
@@ -25,6 +26,11 @@ class Product extends Model
             'p_name_th' => 'required|max:255|' . regexValidateThaiChar(),
             'p_name_en' => 'required|max:255|' . regexValidateEngChar(),
             'p_price' => 'required|numeric|max:99999999999',
+            'p_serial_number' => [
+                'required',
+                Rule::unique('product', 'p_serial_number')->ignore(isset($data['id']) ? $data['id'] : null)
+            ],
+            'file' => 'required|mimes:csv,xls,xlsx',
         ];
         return setRules($rules, $notPickup, $pickup);
     }

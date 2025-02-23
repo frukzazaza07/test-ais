@@ -96,7 +96,7 @@ function regexValidateEngUppercaseChar()
     return 'regex:/^[A-Z]+$/';
 }
 
-function apiResponse(Request $request, $data, $model, $status = 200)
+function apiResponse(Request $request, $data, $model, $status = 200, $headers = ['Content-Type' => 'application/json; charset=UTF-8'])
 {
     if (!$request->wantsJson()) {
         return null;
@@ -105,7 +105,7 @@ function apiResponse(Request $request, $data, $model, $status = 200)
     return response()->json(
         new ApiCollection($data, $model, $status),
         $status >= 200 && $status < 300 ? 200 : $status,
-        ['Content-Type' => 'application/json; charset=UTF-8'],
+        $headers,
         JSON_UNESCAPED_UNICODE
     );
 }
@@ -120,6 +120,7 @@ function getApiResponseMessage($status = 200)
             204 => 'Deleted Successfully.',
             400 => 'Validation Input Error.',
             404 => 'Not found.',
+            500 => 'Service Unavailable',
         ];
         return $message[$status];
     } catch (Exception $e) {

@@ -1,33 +1,21 @@
 <template>
   <CardComponent>
     <template #content>
-      <DataTableComponent
-        v-model:currentPage="table.page"
-        v-model:search="table.search"
-        v-bind="{ dataTable, paginate, textField }"
-        :action="dataTableTitleAction"
-        @update:currentPage="handlePageChange"
-        @update:submitSearch="handleSubmitSearch"
-      >
+      <DataTableComponent v-model:currentPage="table.page" v-model:search="table.search"
+        v-bind="{ dataTable, paginate, textField }" :action="dataTableTitleAction"
+        @update:currentPage="handlePageChange" @update:submitSearch="handleSubmitSearch">
         <template #actionAppendContainer>
           <div>
-            <v-btn color="blue" @click="handleImportFile"> Import CSV </v-btn>
-            <input
-              class="d-none"
-              ref="importFileInputRef"
-              @change="handleFileChange"
-              type="file"
-              accept=".csv"
-            />
-            <v-file-input
-              v-model="form.importFile"
-              accept=".csv"
-              :prepend-icon="null"
-              :rules="[...($helpers.rules?.validateFileType() || [])]"
-            >
-            </v-file-input>
+            <v-btn color="blue" @click="handleImportFile"> Import Products </v-btn>
+            <input class="d-none" ref="importFileInputRef" @change="handleFileChange" type="file" accept=".csv" />
+            <v-form ref="vFormRef" @submit.prevent="handleUploadFile">
+              <v-file-input v-model="form.importFile" accept=".csv" :prepend-icon="null"
+                :rules="[...($helpers.rules?.validateFileType() || [])]">
+              </v-file-input>
+              <v-btn ref="btnSubmit" class="d-none" type="submit"></v-btn>
+            </v-form>
           </div>
-          <v-btn color="secondary"> Export CSV </v-btn>
+          <v-btn color="secondary" @click="handleExportFile"> Export Products </v-btn>
         </template>
         <template #item.id="{ index }">
           {{ $helpers.setSequence(index, data.meta) }}
@@ -36,14 +24,10 @@
           <div class="text-right">{{ $helpers.currencyTh(item.price || 0) }}</div>
         </template>
         <template #item.action="{ item }">
-          <DataTableActionComponent
-            :editHref="
-              route('admin.product.edit', {
-                product: item.id,
-              })
-            "
-            @deleteClick="handleDataDelete(item)"
-          >
+          <DataTableActionComponent :editHref="route('admin.product.edit', {
+            product: item.id,
+          })
+            " @deleteClick="handleDataDelete(item)">
             <template #append>
               <v-btn color="success" @click="handleGenerateQrcode(item)"> Qrcode </v-btn>
             </template>
@@ -53,28 +37,15 @@
     </template>
   </CardComponent>
 
-  <DialogAlertComponent
-    v-model="dialog.modelValue"
-    :message="dialog"
-    @onConfirm="handleDelete"
-  ></DialogAlertComponent>
+  <DialogAlertComponent v-model="dialog.modelValue" :message="dialog" @onConfirm="handleDelete"></DialogAlertComponent>
 
-  <DialogAlertComponent
-    v-model="qrcode.modelValue"
-    :message="qrcode.message"
-    :customConfigDialog="qrcode.customConfigDialog"
-    :customConfigCard="qrcode.customConfigCard"
-  >
+  <DialogAlertComponent v-model="qrcode.modelValue" :message="qrcode.message"
+    :customConfigDialog="qrcode.customConfigDialog" :customConfigCard="qrcode.customConfigCard">
     <template #cardText>
       <v-img :src="qrcode.base64"></v-img>
     </template>
     <template #cardAction>
-      <v-btn
-        color="primary"
-        variant="outlined"
-        @click="() => (qrcode.modelValue = !qrcode.modelValue)"
-        >close</v-btn
-      >
+      <v-btn color="primary" variant="outlined" @click="() => (qrcode.modelValue = !qrcode.modelValue)">close</v-btn>
     </template>
   </DialogAlertComponent>
 </template>
@@ -104,99 +75,106 @@ export default {
       default: () => [],
     },
   },
-  data: () => ({
-    table: {
-      headers: [
-        {
-          title: '#',
-          sortable: false,
-          align: 'center',
-          key: 'id',
-        },
-        {
-          title: 'หมวดหมู่ไทย',
-          sortable: false,
-          align: 'center',
-          key: 'category.nameTh',
-        },
-        {
-          title: 'หมวดหมู่อังกฤษ',
-          sortable: false,
-          align: 'center',
-          key: 'category.nameEn',
-        },
-        {
-          title: 'ชื่อไทย',
-          sortable: false,
-          align: 'center',
-          key: 'nameTh',
-        },
-        {
-          title: 'ชื่ออังกฤษ',
-          sortable: false,
-          align: 'center',
-          key: 'nameEn',
-        },
-        {
-          title: 'Serial Number',
-          sortable: false,
-          align: 'center',
-          key: 'serialNumber',
-        },
-        {
-          title: 'ราคา',
-          sortable: false,
-          align: 'center',
-          key: 'price',
-        },
-        {
-          title: 'Action',
-          sortable: false,
-          align: 'center',
-          key: 'action',
-          width: '300px',
-        },
-      ],
-      serverItems: [],
-      loading: true,
-      page: 1,
-      pageValue: 1, // for ux on search
-      search: '',
-      searchValue: '', // ป้องกันอยู่หน้า 5 แต่ serach ข้อมูลได้แค่หน้า2
-    },
-    dataTableTitleAction: {
-      create: {
-        route: {
-          name: 'admin.product.create',
-          label: 'เพิ่มสินค้า',
+  setup() {
+    return {
+      formDefault: useForm({
+        importFile: null,
+      })
+    }
+  },
+  data() {
+    return {
+      table: {
+        headers: [
+          {
+            title: '#',
+            sortable: false,
+            align: 'center',
+            key: 'id',
+          },
+          {
+            title: 'หมวดหมู่ไทย',
+            sortable: false,
+            align: 'center',
+            key: 'category.nameTh',
+          },
+          {
+            title: 'หมวดหมู่อังกฤษ',
+            sortable: false,
+            align: 'center',
+            key: 'category.nameEn',
+          },
+          {
+            title: 'ชื่อไทย',
+            sortable: false,
+            align: 'center',
+            key: 'nameTh',
+          },
+          {
+            title: 'ชื่ออังกฤษ',
+            sortable: false,
+            align: 'center',
+            key: 'nameEn',
+          },
+          {
+            title: 'Serial Number',
+            sortable: false,
+            align: 'center',
+            key: 'serialNumber',
+          },
+          {
+            title: 'ราคา',
+            sortable: false,
+            align: 'center',
+            key: 'price',
+          },
+          {
+            title: 'Action',
+            sortable: false,
+            align: 'center',
+            key: 'action',
+            width: '300px',
+          },
+        ],
+        serverItems: [],
+        loading: true,
+        page: 1,
+        pageValue: 1, // for ux on search
+        search: '',
+        searchValue: '', // ป้องกันอยู่หน้า 5 แต่ serach ข้อมูลได้แค่หน้า2
+      },
+      dataTableTitleAction: {
+        create: {
+          route: {
+            name: 'admin.product.create',
+            label: 'เพิ่มสินค้า',
+          },
         },
       },
-    },
-    dataDelete: null,
-    dialog: {
-      modelValue: false,
-      body: 'ต้องการลบข้อมูลของ :atribute?',
-      agree: 'Confirm',
-      disagree: 'Cancel',
-    },
-    qrcode: {
-      modelValue: false,
-      base64: '',
-      customConfigDialog: {
-        width: '340px',
+      dataDelete: null,
+      dialog: {
+        modelValue: false,
+        body: 'ต้องการลบข้อมูลของ :atribute?',
+        agree: 'Confirm',
+        disagree: 'Cancel',
       },
-      customConfigCard: {
-        width: '340px',
+      qrcode: {
+        modelValue: false,
+        base64: '',
+        customConfigDialog: {
+          width: '340px',
+        },
+        customConfigCard: {
+          width: '340px',
+        },
+        message: {
+          title: ' ',
+          body: ' ',
+        },
       },
-      message: {
-        title: ' ',
-        body: ' ',
-      },
-    },
-    form: useForm({
-      importFile: null,
-    }),
-  }),
+      form: this.formDefault,
+    }
+  },
   computed: {
     dataTable() {
       return {
@@ -277,13 +255,28 @@ export default {
     handleImportFile() {
       this.$refs?.importFileInputRef?.click()
     },
+    handleExportFile() {
+      const link = document.createElement('a');
+      link.href = route('admin.product.export', { ...this.queryParams });
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    },
     handleFileChange(event) {
       const files = event.target.files
       if (files && files.length > 0) {
         this.form.importFile = files[0]
+        setTimeout(() => {
+          this.$refs.btnSubmit?.$el.click()
+        }, 200)
       } else {
         this.form.importFile = null
       }
+    },
+    async handleUploadFile() {
+      const valid = await this.$refs.vFormRef?.validate();
+      if (!valid.valid) return;
+      this.$inertia.post(route('admin.product.import', { ...this.queryParams }), { file: this.form.importFile })
     },
   },
 }

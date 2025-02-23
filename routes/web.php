@@ -41,6 +41,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::prefix('product')->name('product.')->group(function () {
                 Route::resource('', ProductController::class)->parameters(['' => 'product'])->except(['show']);
                 Route::post('/generate-qrcode/{product}', [ProductController::class, 'generateQrcode'])->name('generate-qrcode');
+                Route::post('/import', [ProductController::class, 'import'])->name('import');
+                Route::get('/export', [ProductController::class, 'export'])->name('export');
             });
         });
     });

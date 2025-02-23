@@ -21,6 +21,7 @@ class ProductResource extends JsonResource
             'serialNumber' => $this->p_serial_number,
             'price' => $this->p_price,
             'category' => new ProductCategoryResource($this->productCategory),
+            'categoryName' => (new ProductCategoryResource($this->productCategory))->pc_name_th,
         ];
     }
 }
