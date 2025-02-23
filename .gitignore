@@ -22,7 +22,6 @@ docker-compose.yml
 
 # Git files
 .git
-.gitignore
 
 # IDE & Editor files
 .vscode/
@@ -35,4 +34,20 @@ nginx/
 php.log
 
 public/build
-docker/mysql/dbdata
+docker/mysql/dbdata/
+
+# Laravel-specific exclusions
+public/storage             # Storage symlink (created by php artisan storage:link)
+bootstrap/cache/           # Compiled cache files
+bootstrap/ssr/           # Compiled ssr
+.env                       # Environment file (sensitive, copy separately if needed)
+.env.*                    # Other environment files (e.g., .env.testing)
+ Homestead.yaml            # Laravel Homestead config
+Homestead.json            # Laravel Homestead config
+
+# Node.js/Inertia-specific exclusions
+node_modules/              # Node dependencies (installed in Dockerfile)
+public/mix-manifest.json  # Legacy Mix manifest
+public/hot                # Vite hot reload file
+npm-debug.log             # Node debug logs
+yarn-error.log            # Yarn error logs
