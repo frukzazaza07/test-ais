@@ -80,7 +80,7 @@ This will start the application with the following services:
 If you need to run artisan or npm commands, use:
 ```sh
 # Run artisan commands wait install finish in container
-docker logs laravel_app
+docker logs -f laravel_app
 
 ```
 
