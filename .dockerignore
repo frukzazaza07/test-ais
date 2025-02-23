@@ -1,10 +1,2 @@
-# laravel-app/.dockerignore
 node_modules
 vendor
-storage/logs
-storage/framework
-storage/app/public/*
-.git
-.gitignore
-*.log
-*.md
