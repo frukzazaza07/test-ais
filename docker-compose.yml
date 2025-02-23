@@ -13,7 +13,7 @@ services:
       - .:/var/www
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
     depends_on:
-      - mysql
+      - db
       - node
     networks:
       - app-network
