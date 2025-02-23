@@ -66,8 +66,8 @@ cp .env.example .env
 # Build and start the containers
 docker-compose up --build -d
 
-# Run migrations
-docker exec -it laravel_app php artisan migrate
+# After container started wait install finish in container
+docker logs -f laravel_app
 ```
 
 This will start the application with the following services:
@@ -79,8 +79,7 @@ This will start the application with the following services:
 ### Running Commands inside Docker
 If you need to run artisan or npm commands, use:
 ```sh
-# Run artisan commands wait install finish in container
-docker logs -f laravel_app
+
 
 ```
 
