@@ -28,6 +28,25 @@ class ProductController extends Controller
      *   summary="Get a list of Products",
      *   security={{"bearerAuth":{}}},  
      *   tags={"Product"},
+     *   @OA\Parameter(
+     *       name="page",
+     *       in="query",
+     *       description="Page number for pagination",
+     *       required=false,
+     *       @OA\Schema(
+     *           type="integer",
+     *           default=1
+     *       )
+     *   ),
+     *   @OA\Parameter(
+     *       name="search",
+     *       in="query",
+     *       description="Search term to filter products by name",
+     *       required=false,
+     *       @OA\Schema(
+     *           type="string"
+     *       )
+     *   ),
      *   @OA\Response(
      *     response=200,
      *     description="Successful operation",
@@ -127,7 +146,6 @@ class ProductController extends Controller
      *       type="object",
      *       @OA\Property(property="nameTh", type="string", example="ตู้เย็น LG"),
      *       @OA\Property(property="nameEn", type="string", example="LG Fridge"),
-     *       @OA\Property(property="serialNumber", type="string", example="INVFR0000001"),
      *       @OA\Property(property="price", type="number", format="double", example=10000),
      *       @OA\Property(property="pcId", type="integer", example=1, description="ID from product category")
      *     )
@@ -440,7 +458,6 @@ class ProductController extends Controller
     public function export(Request $request)
     {
         try {
-            $format = $request->input('format', 'csv');
             $fileName = 'products_' . date('Ymd_His');
 
             $export = new ProductExport();
@@ -449,7 +466,10 @@ class ProductController extends Controller
                 return redirect()->back()->withErrors(['alertMessage' => 'No data available to export.']);
             }
 
-            return Excel::download($export, $fileName . '.xlsx');
+            return Excel::download($export, $fileName . '.xlsx', \Maatwebsite\Excel\Excel::XLSX,  [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=UTF-8',
+                'Content-Disposition' => 'attachment; filename="' . $fileName . '.xlsx"',
+            ]);
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['alertMessage' => $e->getMessage()]);
         }
@@ -499,22 +519,21 @@ class ProductController extends Controller
     private function validateRequest(Request $request, $mode = 'create')
     {
         $fillModel   = ['p_name_th', 'p_name_en', 'p_price'];
-        $rules       = Product::rules(['p_pc_id', 'file']);
+        $rules       = Product::rules([], $fillModel);
         $payload = $request->all();
         if ($mode == 'create') {
             $fillModel = array_merge($fillModel, ['p_pc_id', 'p_created_by', 'p_serial_number']);
-            $rules       = Product::rules(['file']);
+            $rules       = Product::rules([], $fillModel);
             $productCategoryModel = ProductCategory::find($request->pcId);
             if (!$productCategoryModel) {
                 return (object) ["data" => ['pcId' => 'pcId not found'], "error" => true];
             }
-
             $payload = array_merge($payload, [
-                'p_created_by' => Auth::id(),
-                'p_serial_number' => generateSerialNumber($payload['p_pc_id'])
+                'createdBy' => Auth::id(),
+                'serialNumber' => generateSerialNumber($payload['pcId'])
             ]);
         }
-        $requestData = setPayload($request->all(), $fillModel, 'p');
+        $requestData = setPayload($payload, $fillModel, 'p');
         $validator   = Validator::make($requestData, $rules);
         if ($validator->fails()) {
             return (object) ["data" => $validator->errors(), "error" => true];
