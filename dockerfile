@@ -33,7 +33,7 @@ WORKDIR /var/www
 # Copy application files
 COPY . /var/www
 
-ENV COMPOSER_ALLOW_SUPERUSER=1
+# ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Install Laravel dependencies
 RUN composer install --ignore-platform-req=ext-zip --optimize-autoloader --no-dev
