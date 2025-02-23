@@ -35,3 +35,4 @@ nginx/
 php.log
 
 public/build
+docker/mysql/dbdata

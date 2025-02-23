@@ -24,11 +24,6 @@ RUN printf "\n" | pecl install imagick \
 # Verify Imagick installation
 RUN php -m | grep imagick || echo "Imagick installation failed"
 
-# Install nodejs
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs && \
-    npm install
-
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -37,6 +32,11 @@ WORKDIR /var/www
 
 # Copy application files
 COPY . .
+
+# Install nodejs
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install
 
 # Install Laravel dependencies
 RUN composer install --ignore-platform-req=ext-zip --optimize-autoloader --no-dev
