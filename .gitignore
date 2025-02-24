@@ -1,13 +1,13 @@
 # Node & Composer dependencies
-node_modules
-vendor
+/node_modules
+/vendor
 
 # Laravel storage & logs
-storage/*.log
-storage/framework/cache/*
-storage/framework/sessions/*
-storage/framework/views/*
-storage/logs/*
+/storage/*.log
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*
 
 # Local environment files
 .env
@@ -33,13 +33,17 @@ docker-compose.yml
 nginx/
 php.log
 
-public/build
+/public/build
 docker/mysql/dbdata
 
 # Laravel-specific exclusions
-public/storage             # Storage symlink (created by php artisan storage:link)
-bootstrap/cache           # Compiled cache files
-bootstrap/ssr           # Compiled ssr
+/public/storage             # Storage symlink (created by php artisan storage:link)
+/storage/*.key
+/storage/pail
+/bootstrap/cache           # Compiled cache files
+/bootstrap/ssr           # Compiled ssr
+/bootstrap/ssr/           # Compiled ssr
+/bootstrap/ssr/assets           # Compiled ssr
 .env                       # Environment file (sensitive, copy separately if needed)
 .env.*                    # Other environment files (e.g., .env.testing)
  Homestead.yaml            # Laravel Homestead config
