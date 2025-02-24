@@ -40,7 +40,6 @@ docker/mysql/dbdata
 public/storage             # Storage symlink (created by php artisan storage:link)
 bootstrap/cache           # Compiled cache files
 bootstrap/ssr           # Compiled ssr
-bootstrap/ssr/*           # Compiled ssr
 .env                       # Environment file (sensitive, copy separately if needed)
 .env.*                    # Other environment files (e.g., .env.testing)
  Homestead.yaml            # Laravel Homestead config
@@ -52,3 +51,4 @@ public/mix-manifest.json  # Legacy Mix manifest
 public/hot                # Vite hot reload file
 npm-debug.log             # Node debug logs
 yarn-error.log            # Yarn error logs
+

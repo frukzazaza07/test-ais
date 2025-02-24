@@ -47,7 +47,11 @@
             <v-col cols="12" md="4">
               <v-text-field
                 v-model.number="form.price"
-                :rules="[...ruleRequired, ...this.$helpers.rules.max(11)]"
+                :rules="[
+                  ...ruleRequired,
+                  ...this.$helpers.rules.max(11),
+                  ...this.$helpers.rules.validateOnlyNumber(),
+                ]"
                 label="ราคา"
               ></v-text-field>
             </v-col>

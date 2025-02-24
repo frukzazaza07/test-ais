@@ -64,6 +64,10 @@ export const validateFileType = (fileType = ['text/csv']) => [
         : `File type only ${fileType.join(',')}`,
 ]
 
+export const validateOnlyNumber = () => [
+  (v) => (/^[0-9]+$/.test(v) ? true : 'Please input only number.'),
+]
+
 export default () => {
   return {
     rules: {
@@ -73,6 +77,7 @@ export default () => {
       validateThaiCharString,
       validateEngCharString,
       validateFileType,
+      validateOnlyNumber,
     },
   }
 }
